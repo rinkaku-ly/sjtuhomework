@@ -1,5 +1,4 @@
-#ifndef __VECTOR3_H__
-#define __VECTOR3_H__
+#pragma once
 
 #ifndef __min
 #define __min(a,b) ((a)<(b)?(a):(b);
@@ -21,117 +20,126 @@ typedef Vector3<double> Vector3d;
 // class Vector3 definition
 template <class C>
 class Vector3 {
-private:
-	C v[3];
-
+public:
+	C x;
+	C y;
+	C z;
 public:
 	// constructors
-	Vector3() { v[0] = v[1]= v[2] = 0; }
-	Vector3(const C & value) { v[0] = v[1] = v[2] = value; }
+	Vector3() { x = y = z = 0; }
+	Vector3(const C & value) { x = y = z = value; }
 	Vector3(const C & a, const C & b, const C & c) {
-		v[0] = a;
-		v[1] = b;
-		v[2] = c;
+		x = a;
+		y = b;
+		z = c;
 	}
 	Vector3(C arr[]) {
-		v[0] = arr[0];
-		v[1] = arr[1];
-		v[2] = arr[2];
+		x = arr[0];
+		y = arr[1];
+		z = arr[2];
 	}
 	Vector3(const Vector3<C> & right) {
-		v[0] = right.v[0];
-		v[1] = right.v[1];
-		v[2] = right.v[2];
+		x = right.x;
+		y = right.y;
+		z = right.z;
 	}
-
-	bool operator==(const Vector3d& other) const {
-		return other[0] == v[0] && other[1] == v[1] && other[2] == v[2];
-	}
-
-	// access functions
-	const C & X() const { return v[0]; }
-	const C & Y() const { return v[1]; }
-	const C & Z() const { return v[2]; }
-	C & X() { return v[0]; }
-	C & Y() { return v[1]; }
-	C & Z() { return v[2]; }
-
-	C & operator[] (int index) { return v[index]; }
-	const C & operator[] (int index) const { return v[index]; }
 
 
 	// binary operators
-	Vector3<C> operator+ (const Vector3<C> & r) const { return Vector3<C>(v[0]+r[0], v[1]+r[1], v[2]+r[2]); }
-	Vector3<C> operator- (const Vector3<C> & r) const { return Vector3<C>(v[0]-r[0], v[1]-r[1], v[2]-r[2]); }
-	Vector3<C> operator* (const C & r) const { return Vector3<C>(v[0]*r, v[1]*r, v[2]*r); }
+	Vector3<C> operator+ (const Vector3<C> & r) const { return Vector3<C>(x + r.x, y + r.y, z + r.z); }
+	Vector3<C> operator- (const Vector3<C> & r) const { return Vector3<C>(x - r.x, y - r.y, z - r.z); }
+	Vector3<C> operator* (const C & r) const { return Vector3<C>(x*r, y*r, z*r); }
 
 	friend Vector3<C> operator*(const C & l, const Vector3<C> & r);
 
 	//friend Vector3<C> operator*(double mul, const Vector3<C> & r);
 
-	Vector3<C> operator/ (const C & r) const { return Vector3<C>(v[0]/r, v[1]/r, v[2]/r); }
+	Vector3<C> operator/ (const C & r) const { return Vector3<C>(x / r, y / r, z / r); }
 
 
 	// unary operators
-	Vector3<C> operator-() const { return Vector3<C>(-v[0], -v[1], -v[2]); } 
+	Vector3<C> operator-() const { return Vector3<C>(-x, -y, -z); }
 
 
 	// assignment operations
-	Vector3<C> & operator= (const Vector3<C> & r) { v[0]=r[0]; v[1]=r[1]; v[2]=r[2]; return *this; }
+	Vector3<C> & operator= (const Vector3<C> & r) { x = r.x; y = r.y; z = r.z; return *this; }
 	Vector3<C> & operator+= (const Vector3<C> & r) { return (*this) = (*this) + r; }
 	Vector3<C> & operator-= (const Vector3<C> & r) { return (*this) = (*this) - r; }
 	Vector3<C> & operator*= (const C & r) { return (*this) = (*this) * r; }
 	Vector3<C> & operator/= (const C & r) { return (*this) = (*this) / r; }
+	bool operator==(const Vector3<C>& other) const {
+		return other.x == x && other.y == y && other.z == z;
+	}
 
-
-
+	C operator[](const int& index) const {
+		switch (index)
+		{
+		case 0:
+			return x;
+			break;
+		case 1:
+			return y;
+			break;
+		case 2:
+			return z;
+			break;
+		default:
+			return 0;
+			break;
+		}
+	}
 	// dot and cross products
-	C Dot(const Vector3<C> & r) const { return v[0]*r[0] + v[1]*r[1] + v[2]*r[2]; }
-	Vector3<C> Cross(const Vector3<C> & r) const { 
-		return Vector3<C>(	v[1] * r[2] - v[2] * r[1],
-							v[2] * r[0] - v[0] * r[2],
-							v[0] * r[1] - v[1] * r[0] ); 
-	} 
+	C Dot(const Vector3<C> & r) const { return x * r.x + y * r.y + z * r.z; }
+	Vector3<C> Cross(const Vector3<C> & r) const {
+		return Vector3<C>(y * r.z - z * r.y,
+			z * r.x - x * r.z,
+			x * r.y - y * r.x);
+	}
 
 
 	// norm (lengths) functions
-	C L1Norm() const { return fabs(v[0]) + fabs(v[1]) + fabs(v[2]);}
-	C L2Norm() const { return sqrt(Dot(*this));}
-	C Distance(const Vector3<C> & r) const { return (*this-r).L2Norm();} 
+	C L1Norm() const { return fabs(x) + fabs(y) + fabs(z); }
+	C L2Norm() const { return sqrt(Dot(*this)); }
+	C Distance(const Vector3<C> & r) const { return (*this - r).L2Norm(); }
 
 	//judge zero vector
 	bool Iszero() {
-		if (v[0] == 0 && v[1] == 0 && v[2] == 0) { return true; }
+		if (x == 0 && y == 0 && z == 0) { return true; }
 		else { return false; }
 	}
 
 
-	// min, max functions
-	Vector3<C> Min(const Vector3<C> & r) {
-		return Vector3<C>(__min(v[0], r[0]), __min(v[1], r[1]), __min(v[2], r[2]));
-	}
-	Vector3<C> Max(const Vector3<C> & r) {
-		return Vector3<C>(__max(v[0], r[0]), __max(v[1], r[1]), __max(v[2], r[2]));
-	}
-
-
-	// ToArray function
-	const C * ToArray() const { return v;}
-
-
 	// friends operators
 	friend Vector3<C> operator*(const C & l, const Vector3<C> & r) {
-		return Vector3<C>(l*r[0], l*r[1], l*r[2]);
+		return Vector3<C>(l*r.x, l*r.y, l*r.z);
 	}
 
-	//friend Vector3<C> operator*(double mul, const Vector3<C> & r) {
-		//return Vector3<C>(mul*r[0], mul*r[1], mul*r[2]);
-	//}
-
 	friend ostream & operator<< (ostream & out, const Vector3<C> & r) {
-		return out << r[0] << " " << r[1] << " " << r[2];
+		return out << r.x << " " << r.y << " " << r.z;
 	}
 };
 
+template <class C>
+Vector3<C> cross(Vector3<C> &a, Vector3<C> &b) {
+	return Vector3<C>(a.y * b.z - a.z * b.y,
+		a.z * b.x - a.x * b.z,
+		a.x * b.y - a.y * b.x);
+}
 
-#endif // __VECTOR3_H__
+template <class C>
+Vector3<C> min(const Vector3<C> a, const Vector3<C> b, const Vector3<C> c) {
+	return Vector3<C>(__min(__min(a.x, b.x), c.x), __min(__min(a.y, b.y), c.y), __min(__min(a.z, b.z), c.z));
+}
+
+template <class C>
+Vector3<C> max(const Vector3<C> a, const Vector3<C> b, const Vector3<C> c) {
+	return Vector3<C>(__max(__max(a.x, b.x), c.x), __max(__max(a.y, b.y), c.y), __max(__max(a.z, b.z), c.z));
+}
+
+template <class C>
+float max(const Vector3<C> a) {
+	return (__max(__max(a.x, a.y), a.z));
+}
+
+#undef __max
+#undef __min
